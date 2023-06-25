@@ -1,0 +1,8 @@
+{
+  "files.associations": {
+    "ostream": "cpp",
+    "iostream": "cpp"
+  },
+  "editor.fontFamily": "Droid Sans Mono for Powerline",
+  "editor.tabSize": 2
+}
