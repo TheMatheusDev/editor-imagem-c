@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 /**
  * Imprime uma ajuda explicando como o programa deve ser usado.
  * @param program_name Nome do arquivo executável.
@@ -18,10 +20,135 @@ void print_usage(char *program_name) {
   printf("A imagem original será lida da entrada-padrão e a imagem transformada será enviada para a saída-padrão.\n\n");
 }
 
+typedef struct {
+  int r;
+  int g;
+  int b;
+} Pixel;
+
+Pixel** rotacionar_imagem(int largura, int altura, Pixel** pixels) {
+  Pixel** imagem_rotacionada = (Pixel**)malloc(altura * sizeof(Pixel*));
+  for (int i = 0; i < altura; i++) {
+    imagem_rotacionada[i] = (Pixel*)malloc(largura * sizeof(Pixel));
+  }
+
+  for (int i = 0; i < altura; i++) {
+    for (int j = 0; j < largura; j++) {
+      imagem_rotacionada[j][altura - 1 - i] = pixels[i][j];
+    }
+  }
+
+  return imagem_rotacionada;
+}
+
+
+Pixel** ampliar_imagem(int largura, int altura, Pixel** pixels) {
+  int nova_largura = largura * 2;
+  int nova_altura = altura * 2;
+
+  Pixel** imagem_ampliada = (Pixel**)malloc(nova_altura * sizeof(Pixel*));
+  for (int i = 0; i < nova_altura; i++) {
+    imagem_ampliada[i] = (Pixel*)malloc(nova_largura * sizeof(Pixel));
+  }
+
+  for (int i = 0; i < altura; i++) {
+    for (int j = 0; j < largura; j++) {
+      imagem_ampliada[i * 2][j * 2] = pixels[i][j];
+      imagem_ampliada[i * 2][j * 2 + 1] = pixels[i][j];
+      imagem_ampliada[i * 2 + 1][j * 2] = pixels[i][j];
+      imagem_ampliada[i * 2 + 1][j * 2 + 1] = pixels[i][j];
+    }
+  }
+
+  return imagem_ampliada;
+}
+
+Pixel** reduzir_imagem(int largura, int altura, Pixel** pixels) {
+  int nova_largura = largura / 2;
+  int nova_altura = altura / 2;
+
+  Pixel** imagem_reduzida = (Pixel**)malloc(nova_altura * sizeof(Pixel*));
+  for (int i = 0; i < nova_altura; i++) {
+    imagem_reduzida[i] = (Pixel*)malloc(nova_largura * sizeof(Pixel));
+  }
+
+  for (int i = 0; i < nova_altura; i++) {
+    for (int j = 0; j < nova_largura; j++) {
+      imagem_reduzida[i][j] = pixels[i * 2][j * 2];
+    }
+  }
+
+  return imagem_reduzida;
+}
+
+void liberar_imagem(Pixel** imagem, int altura) {
+  for (int i = 0; i < altura; i++) {
+    free(imagem[i]);
+  }
+  free(imagem);
+}
+
+Pixel** ler_ppm_p3(int *largura, int *altura) {
+  char numero_magico[3];
+  int valor_maximo;
+
+  // LEITURA DE PPM
+  scanf("%2s", numero_magico);
+  scanf("%d %d", largura, altura);
+  scanf("%d", &valor_maximo);
+  fgetc(stdin); // Descarta de caractere após valor limite
+
+  Pixel** pixels = (Pixel**)malloc((*altura) * sizeof(Pixel*));
+  for (int i = 0; i < (*altura); i++) {
+    pixels[i] = (Pixel*)malloc((*largura) * sizeof(Pixel));
+  }
+
+  // Leitura dos pixels
+  for (int i = 0; i < (*altura); i++) {
+    for (int j = 0; j < (*largura); j++) {
+      scanf("%d", &(pixels[i][j].r));
+      scanf("%d", &(pixels[i][j].g));
+      scanf("%d", &(pixels[i][j].b));
+    }
+  }
+
+  return pixels;
+}
+
+void imprimir_ppm_p3(int largura, int altura, Pixel** pixels) {
+  printf("P3\n");
+  printf("%d %d\n", largura, altura);
+  printf("255\n");
+  for (int i = 0; i < altura; i++) {
+    for (int j = 0; j < largura; j++) {
+      printf("%d %d %d ", pixels[i][j].r, pixels[i][j].g, pixels[i][j].b);
+    }
+    printf("\n");
+  }
+}
+
+int main(int argc, char *argv[]) {
+  if (argc != 2) {
+    imprimir_instrucoes(argv[0]);
+    return 1;
+  }
+
+  char *operacao = argv[1];
+  int largura, altura;
+  Pixel** imagem;
+
+  imagem = ler_ppm_p3(&largura, &altura);
+
+  printf("\nImagem original:\n");
+  imprimir_ppm_p3(largura, altura, imagem);
+  printf("\n");
+
+  return 0;
+}
+
+
 int rotate() {
 
-typedef struct {
-    int r, g, b;
 } Pixel;
 
 Pixel** image;
