@@ -2,242 +2,294 @@
 #include <stdlib.h>
 #include <string.h>
 
+/*
+TODO:
+- [X] Liberar as memorias das matrizes
+- [X] Fazer a ampliação da imagem
+- [X] Fazer a redução da imagem
+- [X] Gray (filtro)
+- [] Sharpness (filtro)
+- [] Blur (filtro)
+*/ 
+
 /**
- * Imprime uma ajuda explicando como o programa deve ser usado.
+ * @brief Imprime uma ajuda explicando como o programa deve ser usado.
  * @param program_name Nome do arquivo executável.
  */
 void print_usage(char *program_name) {
   printf("Forma de usar:\n");
-  printf("    %s <operacao>\n", program_name);
+  printf("    %s <operacao> <imagem de entrada> <imagem de saida>\n", program_name);
   printf("Onde <operacao> pode ser:\n");
   printf("    gray: para criar uma versão em escala de cinza da imagem original.\n");
   printf("    enlarge: para ampliar em 2x a imagem original.\n");
   printf("    reduce: para reduzir em 2x a imagem original.\n");
   printf("    rotate: para rotacionar 90 graus (sentido horário) a imagem original.\n");
-  printf("    sharp: para aplicar um filtro de sharpening na imagem original.\n");
-  printf("    blur: para aplicar um filtro de blurring na imagem original.\n");
   printf("\n");
   printf("A imagem original será lida da entrada-padrão e a imagem transformada será enviada para a saída-padrão.\n\n");
 }
 
+//Tipo Pixel
 typedef struct {
-  int r;
-  int g;
-  int b;
+  int r, g, b;
 } Pixel;
 
-Pixel** rotacionar_imagem(int largura, int altura, Pixel** pixels) {
-  Pixel** imagem_rotacionada = (Pixel**)malloc(altura * sizeof(Pixel*));
-  for (int i = 0; i < altura; i++) {
-    imagem_rotacionada[i] = (Pixel*)malloc(largura * sizeof(Pixel));
-  }
-
-  for (int i = 0; i < altura; i++) {
-    for (int j = 0; j < largura; j++) {
-      imagem_rotacionada[j][altura - 1 - i] = pixels[i][j];
-    }
-  }
-
-  return imagem_rotacionada;
-}
+//Tipo Imagem
+typedef struct{
+  char P3[3];
+  int linha; 
+  int coluna; 
+  int valorMaxCor;
+  Pixel **pixel; //Matriz de pixels.
+} Imagem;
 
 
-Pixel** ampliar_imagem(int largura, int altura, Pixel** pixels) {
-  int nova_largura = largura * 2;
-  int nova_altura = altura * 2;
-
-  Pixel** imagem_ampliada = (Pixel**)malloc(nova_altura * sizeof(Pixel*));
-  for (int i = 0; i < nova_altura; i++) {
-    imagem_ampliada[i] = (Pixel*)malloc(nova_largura * sizeof(Pixel));
-  }
-
-  for (int i = 0; i < altura; i++) {
-    for (int j = 0; j < largura; j++) {
-      imagem_ampliada[i * 2][j * 2] = pixels[i][j];
-      imagem_ampliada[i * 2][j * 2 + 1] = pixels[i][j];
-      imagem_ampliada[i * 2 + 1][j * 2] = pixels[i][j];
-      imagem_ampliada[i * 2 + 1][j * 2 + 1] = pixels[i][j];
-    }
-  }
-
-  return imagem_ampliada;
-}
-
-Pixel** reduzir_imagem(int largura, int altura, Pixel** pixels) {
-  int nova_largura = largura / 2;
-  int nova_altura = altura / 2;
-
-  Pixel** imagem_reduzida = (Pixel**)malloc(nova_altura * sizeof(Pixel*));
-  for (int i = 0; i < nova_altura; i++) {
-    imagem_reduzida[i] = (Pixel*)malloc(nova_largura * sizeof(Pixel));
-  }
-
-  for (int i = 0; i < nova_altura; i++) {
-    for (int j = 0; j < nova_largura; j++) {
-      imagem_reduzida[i][j] = pixels[i * 2][j * 2];
-    }
-  }
-
-  return imagem_reduzida;
-}
-
-void liberar_imagem(Pixel** imagem, int altura) {
-  for (int i = 0; i < altura; i++) {
-    free(imagem[i]);
-  }
-  free(imagem);
-}
-
-Pixel** ler_ppm_p3(int *largura, int *altura) {
-  char numero_magico[3];
-  int valor_maximo;
-
-  // LEITURA DE PPM
-  scanf("%2s", numero_magico);
-  scanf("%d %d", largura, altura);
-  scanf("%d", &valor_maximo);
-  fgetc(stdin); // Descarta de caractere após valor limite
-
-  Pixel** pixels = (Pixel**)malloc((*altura) * sizeof(Pixel*));
-  for (int i = 0; i < (*altura); i++) {
-    pixels[i] = (Pixel*)malloc((*largura) * sizeof(Pixel));
-  }
-
-  // Leitura dos pixels
-  for (int i = 0; i < (*altura); i++) {
-    for (int j = 0; j < (*largura); j++) {
-      scanf("%d", &(pixels[i][j].r));
-      scanf("%d", &(pixels[i][j].g));
-      scanf("%d", &(pixels[i][j].b));
-    }
-  }
-
-  return pixels;
-}
-
-void imprimir_ppm_p3(int largura, int altura, Pixel** pixels) {
-  printf("P3\n");
-  printf("%d %d\n", largura, altura);
-  printf("255\n");
-  for (int i = 0; i < altura; i++) {
-    for (int j = 0; j < largura; j++) {
-      printf("%d %d %d ", pixels[i][j].r, pixels[i][j].g, pixels[i][j].b);
-    }
-    printf("\n");
-  }
-}
-
-int main(int argc, char *argv[]) {
-  if (argc != 2) {
-    imprimir_instrucoes(argv[0]);
-    return 1;
-  }
-
-  char *operacao = argv[1];
-  int largura, altura;
-  Pixel** imagem;
-
-  imagem = ler_ppm_p3(&largura, &altura);
-
-  printf("\nImagem original:\n");
-  imprimir_ppm_p3(largura, altura, imagem);
-  printf("\n");
-
-  return 0;
-}
-
-
-int rotate() {
-
-} Pixel;
-
-Pixel** image;
-
-int main() {
-    char formato[6];
-    int largura, altura, cormax;
-// Teste de entrada para ver se a função desenvolvida é funcional
-    printf("Type: ");
-    scanf("%s", formato);
-    printf("largura: ");
-    scanf("%d", &largura);
-    printf("altura: ");
-    scanf("%d", &altura);
-
-    // Troca natural entre as dimensões da imagem para rotacionar 90 graus
-    int rotacaoLargura = altura;
-    int rotacaoAltura = largura;
-
-    // Etapa utikizada para alocação da memória de imagem rotacionada
-    image = malloc(rotacaoAltura * sizeof(Pixel*));
-    for (int i = 0; i < rotacaoAltura; i++) {
-        image[i] = malloc(rotacaoLargura * sizeof(Pixel));
-    }
-
-    // Leitura dos pixels da imagem pré rotação
-    printf("Informe os valores RGB dos pixels:\n");
-    for (int i = 0; i < altura; i++) {
-        for (int j = 0; j < largura; j++) {
-            printf("Pixel [%d][%d]:\n", i, j);
-            scanf("%d", &image[rotacaoAltura - 1 - j][i].r);
-            scanf("%d", &image[rotacaoAltura - 1 - j][i].g);
-            scanf("%d", &image[rotacaoAltura - 1 - j][i].b);
-        }
-    }
-
-    // Cabeçalho da imagem pós rotação
-    printf("\nImagem rotacionada:\n");
-    printf("Formato: %s\n", formato);
-    printf("Largura: %d\n", rotacaoLargura);
-    printf("Altura: %d\n", rotacaoAltura);
-
-    // Saída de pixels pós rotação (teste de saída para ver se o programa está funcional)
-    for (int i = 0; i < rotacaoAltura; i++) {
-        for (int j = 0; j < rotacaoLargura; j++) {
-            printf("Pixel [%d][%d]:\n", i, j);
-            printf("R: %d\n", image[i][j].r);
-            printf("G: %d\n", image[i][j].g);
-            printf("B: %d\n", image[i][j].b);
-        }
-    }
-    for (int i = 0; i < rotacaoAltura; i++) {
-        free(image[i]);
-    }
-    free(image);
-  // resquicio para teste em outra aba, lembrar de adicionar <stdio.h> e <stdlib.h>
-    return 0;
-}
-
-}
 /**
- * Função principal: ponto de partida do programa.
+ * @brief Aloca memória para a matriz da imagem. O magic code (P3) e as dimensões não são dinamicamente alocadas.
+ * @param *img Struct onde está armazenada a imagem.
+ * @return Nada - A matriz é alterada por referência, portanto não há retorno.
+ */
+void AlocarMatriz(Imagem *img){
+	img->pixel = (Pixel**) malloc(img->linha*sizeof(Pixel*));
+	
+	for(int i = 0; i < img->linha; i++){
+		img->pixel[i] = (Pixel*) malloc(img->coluna*sizeof(Pixel));
+	}
+}
+
+
+/**
+* @brief Escreve a imagem no arquivo.ppm.
+* @param *nomeArquivo Nome do arquivo a ser escrito.
+* @param *imgSaida Imagem a ser escrita.
+*/
+int EscreverImagem(const char *nomeArquivo, Imagem *imgSaida){
+  FILE *ImagemSaida = fopen(nomeArquivo, "w");
+
+  if(ImagemSaida == NULL){
+    printf("Não foi possivel abrir o arquivo! Tente novamente\n\n");
+    return 0;
+  }
+
+  // Escrevendo as informações da imagem no arquivo de saída.
+  fprintf(ImagemSaida, "%s\n", imgSaida->P3);
+  fprintf(ImagemSaida, "%d %d\n", imgSaida->coluna, imgSaida->linha);
+  fprintf(ImagemSaida, "%d\n", imgSaida->valorMaxCor);
+
+  // Escrevendo os pixels no arquivo de saída.
+  for(int i = 0; i<imgSaida->linha; i++){
+    for(int j = 0; j<imgSaida->coluna; j++){
+      fprintf(ImagemSaida, "%hd\n", imgSaida->pixel[i][j].r);
+      fprintf(ImagemSaida, "%hd\n", imgSaida->pixel[i][j].g);
+      fprintf(ImagemSaida, "%hd\n", imgSaida->pixel[i][j].b);
+    }
+  }
+
+  printf("Imagem escrita com sucesso!\n");
+  fclose(ImagemSaida);
+}
+
+
+/**
+* @brief Lê os dados do arquivo.ppm e armazena-los na struct img.
+* @param nomeArquivo Nome do arquivo a ser lido.
+* @param img A imagem em si.
+*/
+int LerImagem(const char *nomeArquivo, Imagem *img) {
+	char magicNumber[3] = "P3";
+	FILE *imagemEntrada = fopen(nomeArquivo, "r");
+
+  if (imagemEntrada == NULL) {
+    printf("Erro ao abrir o arquivo!\n");
+    return 0;
+  }
+
+  fgets(img->P3, 3, imagemEntrada);
+  if(strcmp(img->P3, magicNumber) != 0){
+    printf("Formato de imagem não suportado!\n");
+    return 0;
+  }
+
+  fscanf(imagemEntrada, "%d %d", &img->coluna, &img->linha);
+  fscanf(imagemEntrada, "%d", &img->valorMaxCor);
+  
+  //Alocando espaço necessário para os pixels.
+  AlocarMatriz(img);
+
+  //Lendo os pixels e armazenando-os na matriz.
+  for(int i = 0; i<img->linha; i++){
+    for(int j = 0; j<img->coluna; j++){
+      fscanf(imagemEntrada, "%d", &img->pixel[i][j].r);
+      fscanf(imagemEntrada, "%d", &img->pixel[i][j].g);
+      fscanf(imagemEntrada, "%d", &img->pixel[i][j].b);
+    }
+  }
+
+  printf("\n\nDEBUG: --- Dados da imagem lida ---\n");
+  printf("Magic number: %s\n", img->P3);
+  printf("Color range: %d\n", img->valorMaxCor);
+  printf("Row size: %d\n", img->linha);
+  printf("Column size: %d\n\n\n", img->coluna);
+
+  printf("Imagem lida com sucesso!\n");
+  fclose(imagemEntrada);
+}
+
+/**
+* @brief Rotaciona a imagem em 90 graus no sentido anti-horário.
+* @param *imgEntrada A imagem de saida.
+* @returns Uma struct do tipo Imagem com a imagem rotacionada.
+*/
+Imagem Rotacionar(Imagem *imgEntrada) {
+  // Necessário pois a imagem rotacionada terá dimensões diferentes da original
+  Imagem imgSaida;
+  strcpy(imgSaida.P3, imgEntrada->P3);
+	imgSaida.coluna = imgEntrada->linha;
+	imgSaida.linha = imgEntrada->coluna;
+	imgSaida.valorMaxCor = imgEntrada->valorMaxCor;
+
+  AlocarMatriz(&imgSaida);
+
+  // Recompõe a imagem rotacionada
+  for (int j = 0; j < imgEntrada->linha; j++) {
+    for (int i = 0; i < imgEntrada->coluna; i++) {
+      imgSaida.pixel[i][j] = imgEntrada->pixel[j][imgEntrada->coluna - i - 1];
+    }
+  }
+
+  return imgSaida;
+}
+
+/**
+* @brief Amplia as dimensões da imagem em 2x (dobra).
+* @param *imgEntrada Imagem a ser ampliada.
+* @returns Uma struct do tipo Imagem com as dimensões ampliadas.
+*/
+Imagem AmpliarImagem(Imagem *imgEntrada) {
+  // Necesário pois a imagem ampliada terá dimensões diferentes da original
+  Imagem imgSaida;
+  strcpy(imgSaida.P3, imgEntrada->P3);
+  imgSaida.coluna = imgEntrada->coluna * 2;
+  imgSaida.linha = imgEntrada->linha * 2;
+  imgSaida.valorMaxCor = imgEntrada->valorMaxCor;
+
+  AlocarMatriz(&imgSaida);
+
+  for (int i = 0; i < imgEntrada->linha; i++) {
+    for (int j = 0; j < imgEntrada->coluna; j++) {
+      imgSaida.pixel[i * 2][j * 2] = imgEntrada->pixel[i][j];
+      imgSaida.pixel[i * 2][j * 2 + 1] = imgEntrada->pixel[i][j];
+      imgSaida.pixel[i * 2 + 1][j * 2] = imgEntrada->pixel[i][j];
+      imgSaida.pixel[i * 2 + 1][j * 2 + 1] = imgEntrada->pixel[i][j];
+    }
+  }
+
+  return imgSaida;
+}
+
+/**
+* @brief Reduz as dimensões da imagem em 2x (pela metade).
+* @param *imgEntrada Imagem a ser ampliada.
+* @returns Uma struct do tipo Imagem com as dimensões reduzidas.
+*/
+Imagem ReduzirImagem(Imagem *imgEntrada) {
+  // Necesário pois a imagem reduzida terá dimensões diferentes da original
+  Imagem imgSaida;
+  strcpy(imgSaida.P3, imgEntrada->P3);
+  imgSaida.coluna = imgEntrada->coluna / 2;
+  imgSaida.linha = imgEntrada->linha / 2;
+  imgSaida.valorMaxCor = imgEntrada->valorMaxCor;
+
+  AlocarMatriz(&imgSaida);
+
+  for (int i = 0; i < imgEntrada->linha; i++) {
+    for (int j = 0; j < imgEntrada->coluna; j++) {
+      imgSaida.pixel[i / 2][j / 2] = imgEntrada->pixel[i][j];
+    }
+  }
+
+  return imgSaida;
+}
+
+/**
+* @brief Aplica um efeito de escala de cinza na imagem.
+* @param *imgEntrada Imagem a ter o efeito aplicado.
+* @return Uma struct do tipo Imagem com o efeito aplicado.
+*/
+Imagem EscalaDeCinza(Imagem *imgEntrada) {
+  Imagem imgSaida;
+  strcpy(imgSaida.P3, imgEntrada->P3);
+  imgSaida.coluna = imgEntrada->coluna;
+  imgSaida.linha = imgEntrada->linha;
+  imgSaida.valorMaxCor = imgEntrada->valorMaxCor;
+
+  AlocarMatriz(&imgSaida);
+
+  for (int i = 0; i < imgEntrada->linha; i++) {
+    for (int j = 0; j < imgEntrada->coluna; j++) {
+      int gray = (imgEntrada->pixel[i][j].r + imgEntrada->pixel[i][j].g + imgEntrada->pixel[i][j].b) / 3;
+      imgSaida.pixel[i][j].r = gray;
+      imgSaida.pixel[i][j].g = gray;
+      imgSaida.pixel[i][j].b = gray;
+    }
+  }
+
+  return imgSaida;
+}
+
+/**
+ * @brief Libera a memória alocada para a matriz de pixels da imagem.
+ * @param *img Struct onde está armazenada a imagem a ser liberada. 
+ */
+void LimparMemoria(Imagem *img){
+	for(int i = 0; i < img->linha; i++){
+		free(img->pixel[i]);
+	}
+	free(img->pixel);
+}
+
+/**
+ * @brief Função principal: ponto de partida do programa.
+ * @param argc Número de argumentos passados para o programa.
+ * @param argv Array de strings contendo os argumentos passados para o programa.
+ * @example ./main rotate ./imgs/galinhos.ppm ./saida.ppm
  */
 int main(int argc, char* argv[]) {
-  /*
-    argc e argv são parâmetros padrões na função main(). Enquanto argc indica quantos
-    argumentos foram passados para o programa na linha de comando, argv contém esses argumentos
-    na ordemem que eles foram passados. argc será sempre >= 1, pois argv[0] terá o nome do programa.
-    Por exemplo, se um programa com `meu_prog` for chamado assim:
-    $ ./meu_prog abc def ghi
-    argc terá o valor 4, indicando que há 4 argumentos, sendo o 1º (argv[0]) o nome do
-    próprio programa ("./meu_prog"), o 2º (argv[1]) será "abc", o 3º (argv[2]) será "def"
-    e, por fim, o 4º (argv[3]) será "ghi."
-  */
-  if (argc != 2) {
-    // se não houver 2 argumentos, então o programa está sendo usado incorretamente.
-    // deve-se portanto imprimir como usá-lo.
+  if (argc != 4) {
     print_usage(argv[0]);
-  }
-  else {
-    char *operation = argv[1]; // operação passada no argumento.
-    /*
-    A partir daqui, você deve:
-    1) ler a imagem da entrada-padrão;
-    2) criar uma nova imagem em função da operação informada;
-    3) enviar a imagem criada para a saída-padrão.
-    Obs: faça isso organizando as operações em funções.
-    */
+    return 0;
   }
 
+  if (strcmp(argv[1], "rotate") != 0
+      && strcmp(argv[1], "enlarge") != 0
+      && strcmp(argv[1], "reduce") != 0
+      && strcmp(argv[1], "gray") != 0) {
+    print_usage(argv[0]);
+    return 0;
+  }
+
+  Imagem imgEntrada; // A estrct que armazena a imagem de entrada
+  LerImagem(argv[2], &imgEntrada);
+
+  if (strcmp(argv[1], "rotate") == 0) {
+    Imagem imgSaida = Rotacionar(&imgEntrada);
+    EscreverImagem(argv[3], &imgSaida);
+  } 
+
+  if (strcmp(argv[1], "enlarge") == 0) {
+    Imagem imgSaida = AmpliarImagem(&imgEntrada);
+    EscreverImagem(argv[3], &imgSaida);
+  }
+
+  if (strcmp(argv[1], "reduce") == 0) {
+    Imagem imgSaida = ReduzirImagem(&imgEntrada);
+    EscreverImagem(argv[3], &imgSaida);
+  }
+
+  if (strcmp(argv[1], "gray") == 0) {
+    Imagem imgSaida = EscalaDeCinza(&imgEntrada);
+    EscreverImagem(argv[3], &imgSaida);
+  }
+
+  LimparMemoria(&imgEntrada);
   return 0;
 }
