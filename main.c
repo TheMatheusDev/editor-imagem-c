@@ -46,9 +46,17 @@ typedef struct{
  */
 void AlocarMatriz(Imagem *img){
 	img->pixel = (Pixel**) malloc(img->linha*sizeof(Pixel*));
-	
+	if (img->pixel == NULL) {
+    printf("Erro ao alocar memória para imagem!\n");
+    return;
+  }
+
 	for(int i = 0; i < img->linha; i++){
 		img->pixel[i] = (Pixel*) malloc(img->coluna*sizeof(Pixel));
+    if (img->pixel[i] == NULL) {
+      printf("Erro ao alocar memória para imagem!\n");
+      return;
+    }
 	}
 }
 
@@ -98,6 +106,10 @@ int EscreverImagem(const char *nomeArquivo, Imagem *imgSaida){
 */
 Imagem* LerImagem(const char *nomeArquivo) {
   Imagem *img = malloc(sizeof(Imagem));
+  if(img == NULL) {
+    printf("Erro ao alocar memória para imagem!\n");
+    return NULL;
+  }
   char magicNumber[3] = "P3";
   FILE *imagemEntrada = fopen(nomeArquivo, "r");
 
@@ -145,6 +157,10 @@ Imagem* LerImagem(const char *nomeArquivo) {
 Imagem *Rotacionar(Imagem *imgEntrada) {
   // Criamos uma nova imagem para não alterar a original.
   Imagem *imgSaida = malloc(sizeof(Imagem));
+  if(imgSaida == NULL) {
+    printf("Erro ao alocar memória para imagem!\n");
+    return NULL;
+  }
   strcpy(imgSaida->P3, imgEntrada->P3);
 	imgSaida->coluna = imgEntrada->linha;
 	imgSaida->linha = imgEntrada->coluna;
@@ -170,6 +186,10 @@ Imagem *Rotacionar(Imagem *imgEntrada) {
 Imagem *AmpliarImagem(Imagem *imgEntrada) {
   // Criamos uma nova imagem para não alterar a original.
   Imagem *imgSaida = malloc(sizeof(Imagem));
+  if(imgSaida == NULL) {
+    printf("Erro ao alocar memória para imagem!\n");
+    return NULL;
+  }
   strcpy(imgSaida->P3, imgEntrada->P3);
   imgSaida->coluna = imgEntrada->coluna * 2;
   imgSaida->linha = imgEntrada->linha * 2;
@@ -201,6 +221,10 @@ Imagem *AmpliarImagem(Imagem *imgEntrada) {
 Imagem *ReduzirImagem(Imagem *imgEntrada) {
   // Criamos uma nova imagem para não alterar a original.
   Imagem *imgSaida = malloc(sizeof(Imagem));
+  if(imgSaida == NULL) {
+    printf("Erro ao alocar memória para imagem!\n");
+    return NULL;
+  }
   strcpy(imgSaida->P3, imgEntrada->P3);
   imgSaida->coluna = imgEntrada->coluna / 2;
   imgSaida->linha = imgEntrada->linha / 2;
@@ -229,6 +253,11 @@ Imagem *ReduzirImagem(Imagem *imgEntrada) {
 Imagem *EscalaDeCinza(Imagem *imgEntrada) {
   // Criamos uma nova imagem para não alterar a original.
  Imagem *imgSaida = malloc(sizeof(Imagem));
+  if(imgSaida == NULL) {
+    printf("Erro ao alocar memória para imagem!\n");
+    return NULL;
+  }
+
   strcpy(imgSaida->P3, imgEntrada->P3);
   imgSaida->coluna = imgEntrada->coluna;
   imgSaida->linha = imgEntrada->linha;
