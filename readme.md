@@ -2,8 +2,8 @@
 
 # Equipe:
 
-- Matheus Felix Araújo
-- Gabriel Giulian Andrade
+- Matheus Felix Araújo (@TheMatheusDev)
+- Gabriel Giulian Andrade (@Harofry)
 
 # Estado:
 
