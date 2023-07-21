@@ -1,14 +1,28 @@
 [![Open in Visual Studio Code](https://classroom.github.com/assets/open-in-vscode-718a45dd9cf7e7f842a935f5ebbe5719a5e09af4491e668f4dbf3b35d5cca122.svg)](https://classroom.github.com/online_ide?assignment_repo_id=11383209&assignment_repo_type=AssignmentRepo)
+
+# Equipe:
+
+- Matheus Felix Araújo
+- Gabriel Giulian Andrade
+
+# Estado:
+
+- Leitura & Escrita da Imagem: OK
+- Rotação da imagem: OK
+- Ampliação da imagem: OK
+- Redução da imagem: OK
+- Filtro de Escala de Cinza: OK
+- Filtro de Sharpening: PENDENTE
+- Filtro de Blurring: PENDENTE
+
 # Processamento de imagens
 
-
-
-
 Processamento de imagem é qualquer processo de transformação de dados no qual a entrada e saída são imagens, tais como fotografias ou quadros de vídeo. Neste projeto, você irá criar um programa que realize transformações simples em imagens. Ele deverá realizar as seguintes operações:
-* Transformação de uma imagem colorida em escada de cinza;
-* Ampliação/redução de uma imagem (2x);
-* Rotação de uma imagem (90 graus);
-* Aplicação de filtros de difusão (blurring) e de nitidez (sharpening).
+
+- Transformação de uma imagem colorida em escada de cinza;
+- Ampliação/redução de uma imagem (2x);
+- Rotação de uma imagem (90 graus);
+- Aplicação de filtros de difusão (blurring) e de nitidez (sharpening).
 
 Para a realização do projeto, faz-se necessário apresentar alguns conceitos básicos de processamento de imagem, a começar como elas são representadas em arquivos e depois como essas representações podem ser manipuladas.
 
@@ -48,14 +62,11 @@ As demais linhas do arquivo se referem aos valores RGB dos pixels da imagem. Ou 
 
 Neste projeto, os arquivos de imagem utilizarão sempre o formato PPM P3 com o valor de qualidade fixo em 255. As dimensões podem, entretanto, variar.
 
-
-
-
 ## Transformações de imagens
 
 ### Transformação em escala de cinza
 
-Em uma imagem em escala de cinza, os componentes R, G e B de todos os seus pixels possuem o mesmo valor, indicando a não predominância de uma cor sobre as outras. Por exemplo, [R = 50, G = 50 e B = 50] representa um cinza escuro, [R = 250, G = 250 e B = 250] representa um cinza claro e [R = 150, G = 150 e B = 150] um cinza médio. 
+Em uma imagem em escala de cinza, os componentes R, G e B de todos os seus pixels possuem o mesmo valor, indicando a não predominância de uma cor sobre as outras. Por exemplo, [R = 50, G = 50 e B = 50] representa um cinza escuro, [R = 250, G = 250 e B = 250] representa um cinza claro e [R = 150, G = 150 e B = 150] um cinza médio.
 
 Assim, uma das abordagens mais simples para transformar uma imagem colorida em escala de cinza é calcular a média dos componentes RGB de cada pixel (C = (R+G+B/3)) e atribuir esse valor aos componentes RGB do pixel (R = G = B = C).
 
@@ -99,33 +110,36 @@ Em função dos valores na matriz, podemos transformar a imagem de diferentes fo
 
 ```math
 \begin{pmatrix}
- 0 & -1 &  0\\ 
--1 &  5 & -1\\ 
+ 0 & -1 &  0\\
+-1 &  5 & -1\\
  0 & -1 &  0
 \end{pmatrix}
 ```
-*Matriz para o filtro de sharpening*.
+
+_Matriz para o filtro de sharpening_.
 
 ```math
 \begin{pmatrix}
-1/9 & 1/9 & 1/9 \\ 
-1/9 & 1/9 & 1/9 \\ 
-1/9 & 1/9 & 1/9 
+1/9 & 1/9 & 1/9 \\
+1/9 & 1/9 & 1/9 \\
+1/9 & 1/9 & 1/9
 \end{pmatrix}
 ```
-*Matriz para o filtro de blurring*.
+
+_Matriz para o filtro de blurring_.
 
 Como os valores da máscara são "pesos", esses valores serão multiplicadores dos valores RGB de cada pixel. Por exemplo, se aplicarmos a máscara de sharpening acima no pixel (1,1) de uma imagem, o valor de seu componente R do pixel será 5x o valor de seu R menos a soma dos valores R de seus adjacentes ortogonais (horizontal e vertical). Veja que, como os cantos da matriz valem 0, os adjacentes diagonais não irão influenciar na cor resultante. Na matriz de blurring acima, o valor de cada componente (R, G e B) será a média dele e seus adjacentes.
 
 # O Programa
 
 Seu programa deve receber como argumento o nome da transformação a ser realizada, podendo ser:
-* `gray`: para criar uma nova imagem em escala de cinza;
-* `enlarge`: para ampliar a imagem em 2x;
-* `reduce`: para reduzir a imagem em 2x;
-* `rotate`: para rotacionar a imagem em 90º no sentido anti-horário;
-* `sharp`: para aumentar a nitidez da imagem (aplicar o filtro de sharpening);
-* `blur`: para reduzir a nitidez da imagem (aplicar o filtro de blurring).
+
+- `gray`: para criar uma nova imagem em escala de cinza;
+- `enlarge`: para ampliar a imagem em 2x;
+- `reduce`: para reduzir a imagem em 2x;
+- `rotate`: para rotacionar a imagem em 90º no sentido anti-horário;
+- `sharp`: para aumentar a nitidez da imagem (aplicar o filtro de sharpening);
+- `blur`: para reduzir a nitidez da imagem (aplicar o filtro de blurring).
 
 Os dados da imagem original devem ser lidos da entrada-padrão (`cin`) no formato PPM P3 e os dados da nova imagem (após a transformação) devem ser enviados para a saída-padrão (`cout`).
 
@@ -152,20 +166,21 @@ Seu projeto deverá ser submetido via git até a data indicada na turma no Githu
 # Critérios de avaliação
 
 A nota correspodente ao projeto seguirá os critérios e distribuição abaixo:
-* Atendimento dos requisitos do projeto: 7,0
-  * Leitura e escrita da image: 1,0
-  * Transformação em escala de cinza: 1,0
-  * Apliação da imagem: 1,0
-  * Redução da imagem: 1,0
-  * Rotação da imagem: 1,0
-  * Aplicação de filtros: 2,0
-* Organização da solução: 3,0
-  * Uso adequado de funções: 1,0
-  * Uso padrões em relação a nomes, identação etc.: 1,0
-  * Documentação do código: 1,0
+
+- Atendimento dos requisitos do projeto: 7,0
+  - Leitura e escrita da image: 1,0
+  - Transformação em escala de cinza: 1,0
+  - Apliação da imagem: 1,0
+  - Redução da imagem: 1,0
+  - Rotação da imagem: 1,0
+  - Aplicação de filtros: 2,0
+- Organização da solução: 3,0
+  - Uso adequado de funções: 1,0
+  - Uso padrões em relação a nomes, identação etc.: 1,0
+  - Documentação do código: 1,0
 
 ## Observações
 
-* O projeto deve ser desenvolvido individualmente ou em dupla. Não serão permitidos grupos com três ou mais alunos.
-* Cada dupla deve desenvolver sua solução de forma independente das demais. Soluções idênticas serão consideradas plágios e, portanto, sanções serão devidamente aplicadas em todas as duplas com soluções similares.
-* Caso algum trecho de código seja utilizado da web ou gerado via IA, essa informação deve estar presente na documentação do projeto.
+- O projeto deve ser desenvolvido individualmente ou em dupla. Não serão permitidos grupos com três ou mais alunos.
+- Cada dupla deve desenvolver sua solução de forma independente das demais. Soluções idênticas serão consideradas plágios e, portanto, sanções serão devidamente aplicadas em todas as duplas com soluções similares.
+- Caso algum trecho de código seja utilizado da web ou gerado via IA, essa informação deve estar presente na documentação do projeto.
